@@ -9,8 +9,6 @@ public export
 data Rank
   = N2 | N3 | N4 | N5 | N6 | N7 | N8 | N9 | N10 | Jack | Queen | King | Ace
 
-  --deriving (Eq, Ord, Show, Enum)
-
 -- TODO deriving ?
 public export
 implementation Show Rank where
@@ -87,8 +85,6 @@ data Suit
   | Diamond
   | Club
   | Spade
-  
-  --deriving (Eq, Show)
 
 public export
 implementation Show Suit where
@@ -108,7 +104,7 @@ implementation Eq Suit where
 
 -- Card -----------------------------------------------------------------------
 public export
-data Card = MkCard Rank Suit --deriving (Eq, Show)
+data Card = MkCard Rank Suit
 
 public export
 implementation Show Card where
@@ -124,10 +120,8 @@ implementation Ord Card where
 
 public export
 Board : Type
---Board = List Card
 Board = Vect 5 Card
---Hand : Type
---Hand = List Card
+
 public export
 Hand : Nat -> Type
 Hand n = Vect n Card
@@ -153,8 +147,6 @@ data Input : GameType -> Type where
   MkOmahaHoldem   : Board ->  List (Hand 4) -> Input OmahaHoldem
   MkFiveCardDraw  :           List (Hand 5) -> Input FiveCardDraw
 
-  --deriving (Eq, Show)
-
 public export
 implementation Show (Input t) where
   show (MkTexasHoldem board hands)  = "TexasHoldem " ++ show board ++ " " ++ show hands
@@ -172,8 +164,6 @@ implementation Eq (Input t) where
 
   MkFiveCardDraw hands1       == MkFiveCardDraw hands2
     = hands1 == hands2
-
-  --_ == _ = False
 
 public export
 data HandsOrd : Nat -> Type where
@@ -211,8 +201,6 @@ data Pattern
 
   -- `rank` the rank of the "high card" in `HighCard rank`
   | HighCard      Rank
-
-  --deriving (Eq, Show)
 
 public export
 implementation Show Pattern where

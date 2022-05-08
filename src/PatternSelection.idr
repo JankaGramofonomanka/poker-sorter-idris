@@ -3,14 +3,11 @@ module PatternSelection
 import Data.List
 import Data.List1
 import Data.Vect
---import Data.Function
-
 
 import Interfaces
 import DataDefs
 import HandOrder
 import Utils
-
 
 
 {-  `Rule` is a type of functions that represent poker rules. A function of 
@@ -33,14 +30,12 @@ groupByRank l = map list1ToList $ (groupBy ((==) `on` rnk) . sort) l
 
 partial
 isStraight : Vect 5 Card -> Bool
---isStraight Nil = False
 isStraight cards = let
 
     sorted = sortVect cards
     (first :: rest) = sorted
 
     nats : Vect 4 Nat
-    --nats = 1 :: map (1 +) nats
     nats = [1, 2, 3, 4]
 
     zipped : Vect 4 (Nat, Card)
@@ -54,7 +49,6 @@ isStraight cards = let
   in all (inPlace first) zipped
 
 isFlush : Vect 5 Card -> Bool
---isFlush Nil = False
 isFlush (card :: cards) = all (((==) `on` suit) card) cards
 
 -- rank of the first card in a list
@@ -151,7 +145,6 @@ bestPatternAndCardsUsed cards = do
                   , toList $ bestFourOfAKind
                   )
   
-
   {- TODO
   -- Full House
   let (_, _) = (threeOfAKinds, pairs)
@@ -216,8 +209,6 @@ texasHoldem board hand = bestPattern (board ++ hand)
 partial
 omahaHoldem : Rule n
 omahaHoldem board hand = let
-    --fromBoard = filter (ofLength 3) (subsequences $ vecToList board)
-    --fromHand  = filter (ofLength 2) (subsequences $ vecToList hand)
     fromBoard = subsequencesOfLengthVect 3 board
     fromHand  = subsequencesOfLengthVect 2 hand
 
@@ -228,7 +219,6 @@ omahaHoldem board hand = let
   in maximum $ listToList1 bestPatterns
 
 fiveCardDraw : Rule n
---fiveCardDraw _ = bestPattern . vecToList
 fiveCardDraw _ = bestPattern
 
 

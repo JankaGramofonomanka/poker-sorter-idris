@@ -2,7 +2,6 @@ module HandOrder
 
 import Data.List
 import Data.Vect
---import Data.Function
 
 import DataDefs
 import Interfaces
@@ -13,8 +12,6 @@ record HandWithPattern where
   constructor HandWP
   pattern : Pattern
   rest : List Rank
-
-  --deriving (Eq, Show)
 
 public export
 implementation Show HandWithPattern where

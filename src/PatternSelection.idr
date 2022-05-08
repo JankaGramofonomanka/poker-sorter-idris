@@ -57,9 +57,6 @@ isFlush : Vect 5 Card -> Bool
 --isFlush Nil = False
 isFlush (card :: cards) = all (((==) `on` suit) card) cards
 
-
--- Utils ----------------------------------------------------------
-
 -- rank of the first card in a list
 rankOfFirst : Vect (S k) Card -> Rank
 rankOfFirst = rnk . head
@@ -76,7 +73,19 @@ straightRank cards = case lowest of
     lowest        = rnk $ head cards
     secondHighest = rnk $ last (init cards)
 
+{-  compare all ranks starting from the strongest 
+    (reverse because the card sets are sorted)
+-}
+cmpFlushes : Vect 5 Card -> Vect 5 Card -> Ordering
+cmpFlushes = compare `on` (reverse . map rnk)
 
+-- compare straight ranks
+cmpStraights : Vect 5 Card -> Vect 5 Card -> Ordering
+cmpStraights = compare `on` straightRank
+
+-- compare ranks of the "n-of a kinds" 
+cmpRanks : Vect (S k) Card -> Vect (S k) Card -> Ordering
+cmpRanks = compare `on` rankOfFirst
 
 
 {-  Find the best pattern in a set of cards and return the pattern with the
@@ -91,14 +100,6 @@ bestPatternAndCardsUsed cards = do
 
   let fiveCardSets = subsequencesOfLengthVect 5 sorted
   
-  {-  compare all ranks starting from the strongest 
-      (reverse because the card sets are sorted)
-  -}
-  let cmpFlushes = compare `on` (reverse . map rnk)
-
-  -- compare straight ranks
-  let cmpStraights = compare `on` straightRank
-
   -- sort the straights and flushes so that the best one is first
   let flushes         = sortDescBy cmpFlushes   $ filter isFlush    fiveCardSets
   let straights       = sortDescBy cmpStraights $ filter isStraight fiveCardSets
@@ -115,10 +116,6 @@ bestPatternAndCardsUsed cards = do
 
   -- N of A Kind ----------------------------------------------------
   let nOfAKinds : List (List Card) = groupByRank (toList cards)
-  
-  -- compare ranks of the "n-of a kinds" 
-  let cmpRanks : {k : Nat} -> Vect (S k) Card -> Vect (S k) Card -> Ordering
-      = compare `on` rankOfFirst
 
   -- sort the "n-of a kinds". to so that the best one is first
   let fourOfAKinds  : List (Vect 4 Card) = sortDescBy cmpRanks $ filterLength 4 nOfAKinds

@@ -105,14 +105,14 @@ bestPatternAndCardsUsed cards = do
   let straights       = sortDescBy cmpStraights $ filter isStraight fiveCardSets
   let straightFlushes =                           filter isFlush    straights
 
-  let bestFlush : NonEmpty flushes -> Vect 5 Card
-      = \prf => head flushes
+  let bestFlush         : {auto 0 _ : NonEmpty flushes}         -> Vect 5 Card
+      = head flushes
 
-  let bestStraight : NonEmpty straights -> Vect 5 Card
-      = \prf => head straights
+  let bestStraight      : {auto 0 _ : NonEmpty straights}       -> Vect 5 Card
+      = head straights
 
-  let bestStraightFlush : NonEmpty straightFlushes -> Vect 5 Card
-      = \prf => head straightFlushes
+  let bestStraightFlush : {auto 0 _ : NonEmpty straightFlushes} -> Vect 5 Card
+      = head straightFlushes
 
   -- N of A Kind ----------------------------------------------------
   let nOfAKinds : List (List Card) = groupByRank (toList cards)
@@ -122,16 +122,17 @@ bestPatternAndCardsUsed cards = do
   let threeOfAKinds : List (Vect 3 Card) = sortDescBy cmpRanks $ filterLength 3 nOfAKinds
   let pairs         : List (Vect 2 Card) = sortDescBy cmpRanks $ filterLength 2 nOfAKinds
   
-  let bestFourOfAKind : NonEmpty fourOfAKinds -> Vect 4 Card
-      = \prf => head fourOfAKinds
+  let bestFourOfAKind   : {auto 0 _ : NonEmpty fourOfAKinds}  -> Vect 4 Card
+      = head fourOfAKinds
   
-  let bestThreeOfAKind : NonEmpty threeOfAKinds -> Vect 3 Card
-      = \prf => head threeOfAKinds
+  let bestThreeOfAKind  : {auto 0 _ : NonEmpty threeOfAKinds} -> Vect 3 Card
+      = head threeOfAKinds
   
-  let bestPair : NonEmpty pairs -> Vect 2 Card
-      = \prf => head pairs
+  let bestPair          : {auto 0 _ : NonEmpty pairs}         -> Vect 2 Card
+      = head pairs
   
-  let secondBestPair : ({auto 0 _ : Has 2 pairs} -> Vect 2 Card) = pairs !! 1
+  let secondBestPair    : {auto 0 _ : Has 2 pairs}            -> Vect 2 Card
+      = pairs !! 1
   
   let bestHighCard = last sorted
   
@@ -139,15 +140,15 @@ bestPatternAndCardsUsed cards = do
 
   -- Straight Flush
   let Nil = straightFlushes
-      | _ :: _ => ( StraightFlush (straightRank $ bestStraightFlush IsNonEmpty)
-                  , toList $ bestStraightFlush IsNonEmpty
+      | _ :: _ => ( StraightFlush (straightRank bestStraightFlush)
+                  , toList bestStraightFlush
                   )
       
   
   -- Four Of A Kind
   let Nil = fourOfAKinds
-      | _ :: _ => ( FourOfAKind (rankOfFirst $ bestFourOfAKind IsNonEmpty)
-                  , toList $ bestFourOfAKind IsNonEmpty
+      | _ :: _ => ( FourOfAKind (rankOfFirst $ bestFourOfAKind)
+                  , toList $ bestFourOfAKind
                   )
   
 
@@ -162,32 +163,32 @@ bestPatternAndCardsUsed cards = do
 
   -- Flush
   let Nil = flushes
-      | _ :: _ => ( Flush (map rnk $ bestFlush IsNonEmpty)
-                  , toList $ bestFlush IsNonEmpty
+      | _ :: _ => ( Flush (map rnk bestFlush)
+                  , toList $ bestFlush
                   )
 
   -- Straight
   let Nil = straights
-      | _ :: _ => ( Straight (straightRank $ bestStraight IsNonEmpty)
-                  , toList $ bestStraight IsNonEmpty
+      | _ :: _ => ( Straight (straightRank bestStraight)
+                  , toList $ bestStraight
                   )
 
   
   -- Three Of A Kind
   let Nil = threeOfAKinds
-      | _ :: _ => ( ThreeOfAKind (rankOfFirst $ bestThreeOfAKind IsNonEmpty)
-                  , toList $ bestThreeOfAKind IsNonEmpty
+      | _ :: _ => ( ThreeOfAKind (rankOfFirst $ bestThreeOfAKind)
+                  , toList $ bestThreeOfAKind
                   )
 
   let Nil = pairs
   -- Two Pairs
-      | (_ :: _ :: _) =>  ( TwoPairs  (rankOfFirst $ bestPair IsNonEmpty)
+      | (_ :: _ :: _) =>  ( TwoPairs  (rankOfFirst $ bestPair)
                                       (rankOfFirst $ secondBestPair)
-                          , toList $ bestPair IsNonEmpty ++ secondBestPair
+                          , toList $ bestPair ++ secondBestPair
                           )
   -- Pair
-      | (_ :: _) => ( Pair (rankOfFirst $ bestPair IsNonEmpty)
-                    , toList $ bestPair IsNonEmpty
+      | (_ :: _) => ( Pair (rankOfFirst $ bestPair)
+                    , toList $ bestPair
                     )
   
   -- High Card

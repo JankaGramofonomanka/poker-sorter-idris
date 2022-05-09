@@ -81,6 +81,12 @@ cmpStraights = compare `on` straightRank
 cmpRanks : Vect (S k) Card -> Vect (S k) Card -> Ordering
 cmpRanks = compare `on` rankOfFirst
 
+bothNonEmpty : (l1 : List a) -> (l2 : List b) -> Maybe (NonEmpty l1, NonEmpty l2)
+bothNonEmpty (_ :: _) (_ :: _) = Just (IsNonEmpty, IsNonEmpty)
+bothNonEmpty _ _ = Nothing
+
+
+
 
 {-  Find the best pattern in a set of cards and return the pattern with the
     list of cards used in it
@@ -111,7 +117,7 @@ bestPatternAndCardsUsed cards = do
   -- N of A Kind ----------------------------------------------------
   let nOfAKinds : List (List Card) = groupByRank (toList cards)
 
-  -- sort the "n-of a kinds". to so that the best one is first
+  -- sort the "n-of a kinds", to so that the best one is first
   let fourOfAKinds  : List (Vect 4 Card) = sortDescBy cmpRanks $ filterLength 4 nOfAKinds
   let threeOfAKinds : List (Vect 3 Card) = sortDescBy cmpRanks $ filterLength 3 nOfAKinds
   let pairs         : List (Vect 2 Card) = sortDescBy cmpRanks $ filterLength 2 nOfAKinds
@@ -137,7 +143,6 @@ bestPatternAndCardsUsed cards = do
       | _ :: _ => ( StraightFlush (straightRank bestStraightFlush)
                   , toList bestStraightFlush
                   )
-      
   
   -- Four Of A Kind
   let Nil = fourOfAKinds
@@ -145,14 +150,13 @@ bestPatternAndCardsUsed cards = do
                   , toList $ bestFourOfAKind
                   )
   
-  {- TODO
+  -- TODO find a prettier way than using `bothNonEmpty`
   -- Full House
-  let (_, _) = (threeOfAKinds, pairs)
-      | (_ :: _, _ :: _) => ( FullHouse (rankOfFirst $ bestThreeOfAKind IsNonEmpty)
-                                        (rankOfFirst $ bestPair IsNonEmpty)
-                            , toList $ bestThreeOfAKind IsNonEmpty ++ bestPair IsNonEmpty
-                            )
-  -}
+  let Nothing = bothNonEmpty threeOfAKinds pairs
+      | Just (prf3, prf2) =>  ( FullHouse (rankOfFirst $ bestThreeOfAKind)
+                                          (rankOfFirst $ bestPair)
+                              , toList $ bestThreeOfAKind ++ bestPair
+                              )
 
   -- Flush
   let Nil = flushes
@@ -166,7 +170,6 @@ bestPatternAndCardsUsed cards = do
                   , toList $ bestStraight
                   )
 
-  
   -- Three Of A Kind
   let Nil = threeOfAKinds
       | _ :: _ => ( ThreeOfAKind (rankOfFirst $ bestThreeOfAKind)
@@ -179,6 +182,7 @@ bestPatternAndCardsUsed cards = do
                                       (rankOfFirst $ secondBestPair)
                           , toList $ bestPair ++ secondBestPair
                           )
+
   -- Pair
       | (_ :: _) => ( Pair (rankOfFirst $ bestPair)
                     , toList $ bestPair

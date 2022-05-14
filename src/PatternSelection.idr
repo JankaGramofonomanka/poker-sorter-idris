@@ -28,7 +28,7 @@ suit (MkCard _ s) = s
 groupByRank : List Card -> List (List Card)
 groupByRank l = map list1ToList $ (groupBy ((==) `on` rnk) . sort) l
 
-partial
+
 isStraight : Vect 5 Card -> Bool
 isStraight cards = let
 
@@ -43,7 +43,7 @@ isStraight cards = let
 
     inPlace : Card -> (Nat, Card) -> Bool
     inPlace first (dist, card)
-      =   fromEnum (rnk first) + dist == fromEnum (rnk card)
+      =   rankNum (rnk first) + dist == rankNum (rnk card)
       ||  (rnk first == N2 && dist == 4 && rnk card == Ace)
 
   in all (inPlace first) zipped

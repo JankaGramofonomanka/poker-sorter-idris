@@ -1,8 +1,11 @@
 module Interfaces
 
+import Data.Fin
+
 public export
 interface Enum a where
-  partial
-  toEnum : Nat -> a
+  numValues : Nat
 
-  fromEnum : a -> Nat
+  toEnum : Fin numValues -> a
+
+  fromEnum : a -> Fin numValues

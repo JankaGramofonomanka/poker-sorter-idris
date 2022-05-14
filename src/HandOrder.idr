@@ -23,6 +23,11 @@ implementation Eq HandWithPattern where
   HandWP { pattern = p1, rest = r1 } == HandWP { pattern = p2, rest = r2 }
     = p1 == p2 && r1 == r2
 
+
+public export
+rankNum : Rank -> Nat
+rankNum = finToNat . fromEnum
+
 {-  assign a number to each pattern type so that the stronger the pattern, 
     the bigger the number, ignoring ranks of the cards forming a pattern.
     
@@ -66,7 +71,7 @@ patternNumList p = patternTypeNum p :: patternContentNums where
     HighCard      rank                => [ rank ]
   
   patternContentNums : List Nat
-  patternContentNums = map fromEnum patternContentRanks
+  patternContentNums = map rankNum patternContentRanks
 
 
 {-  just like `patternNumList`, but taking into account the rest of the cards a 
@@ -76,7 +81,7 @@ patternNumList p = patternTypeNum p :: patternContentNums where
 public export
 handNumList : HandWithPattern -> List Nat
 handNumList (HandWP { pattern, rest })
-  = patternNumList pattern ++ map fromEnum (sortDesc rest)
+  = patternNumList pattern ++ map rankNum (sortDesc rest)
 
 public export
 implementation Ord Pattern where

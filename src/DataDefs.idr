@@ -45,6 +45,8 @@ implementation Eq Rank where
 
 public export
 implementation Enum Rank where
+  numValues = 13
+  
   fromEnum N2    = 0
   fromEnum N3    = 1
   fromEnum N4    = 2

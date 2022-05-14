@@ -11,11 +11,14 @@ import Utils
 
 
 {-  `Rule` is a type of functions that represent poker rules. A function of 
-    type `Rule` selects the best pattern from a hand and a board according to 
-    the rule it represents.
+    type `Rule` selects the best pattern from a hand and a board (optionally)
+    according to the rule it represents.
 -}
-Rule : Nat -> Type
-Rule n = Board -> Hand (S n) -> HandWithPattern
+public export
+Rule : GameType -> Type
+Rule TexasHoldem  = Board ->  Hand (handSize TexasHoldem)   -> HandWithPattern
+Rule OmahaHoldem  = Board ->  Hand (handSize OmahaHoldem)   -> HandWithPattern
+Rule FiveCardDraw =           Hand (handSize FiveCardDraw)  -> HandWithPattern
 
 -- Helper functions -----------------------------------------------------------
 rnk : Card -> Rank
@@ -207,11 +210,13 @@ bestPattern cards = let
     
 
 -- Rule definitions -----------------------------------------------------------
-texasHoldem : Rule n
+public export
+texasHoldem : Rule TexasHoldem
 texasHoldem board hand = bestPattern (board ++ hand)
 
+public export
 partial
-omahaHoldem : Rule n
+omahaHoldem : Rule OmahaHoldem
 omahaHoldem board hand = let
     fromBoard = subsequencesOfLengthVect 3 board
     fromHand  = subsequencesOfLengthVect 2 hand
@@ -222,7 +227,8 @@ omahaHoldem board hand = let
 
   in maximum $ listToList1 bestPatterns
 
-fiveCardDraw : Rule n
-fiveCardDraw _ = bestPattern
+public export
+fiveCardDraw : Rule FiveCardDraw
+fiveCardDraw = bestPattern
 
 

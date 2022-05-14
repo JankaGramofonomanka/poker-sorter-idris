@@ -1,6 +1,7 @@
 module DataDefs
 
 import Data.Vect
+import Data.List1
 
 import Interfaces
 
@@ -46,7 +47,7 @@ implementation Eq Rank where
 public export
 implementation Enum Rank where
   numValues = 13
-  
+
   fromEnum N2    = 0
   fromEnum N3    = 1
   fromEnum N4    = 2
@@ -144,10 +145,17 @@ implementation Eq GameType where
   _ == _ = False
 
 public export
+handSize : GameType -> Nat
+handSize TexasHoldem  = 2
+handSize OmahaHoldem  = 4
+handSize FiveCardDraw = 5
+
+
+public export
 data Input : GameType -> Type where
-  MkTexasHoldem   : Board ->  List (Hand 2) -> Input TexasHoldem
-  MkOmahaHoldem   : Board ->  List (Hand 4) -> Input OmahaHoldem
-  MkFiveCardDraw  :           List (Hand 5) -> Input FiveCardDraw
+  MkTexasHoldem   : Board ->  List (Hand (handSize TexasHoldem))  -> Input TexasHoldem
+  MkOmahaHoldem   : Board ->  List (Hand (handSize OmahaHoldem))  -> Input OmahaHoldem
+  MkFiveCardDraw  :           List (Hand (handSize FiveCardDraw)) -> Input FiveCardDraw
 
 public export
 implementation Show (Input t) where
@@ -169,7 +177,7 @@ implementation Eq (Input t) where
 
 public export
 data HandsOrd : Nat -> Type where
-  MkHandsOrd : List (List (Hand n)) -> HandsOrd n
+  MkHandsOrd : List (List1 (Hand n)) -> HandsOrd n
 
 -- Pattern --------------------------------------------------------------------
 public export
